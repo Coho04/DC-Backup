@@ -1,0 +1,6 @@
+<login>
+    <Discord>
+        <Token>TOKEN</Token>
+        <Webhook>WEBHOOK</Webhook>
+    </Discord>
+</login>
