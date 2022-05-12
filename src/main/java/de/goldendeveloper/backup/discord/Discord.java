@@ -21,7 +21,6 @@ public class Discord {
     public static String getCmdRestart = "restart";
     public static String getCmdBackup = "discord-backup";
     public static String getCmdImport = "discord-import";
-    public static String getCmdDelete = "discord-delete";
 
     public Discord(String token) {
         try {
@@ -64,7 +63,6 @@ public class Discord {
         bot.upsertCommand(getCmdBackup, "Macht ein Backup des Discord Servers").queue();
         bot.upsertCommand(getCmdImport, "Importiert ein Discord Server Backup!").queue();
         bot.upsertCommand(getCmdRestart, "Startet den Bot neu").queue();
-        bot.upsertCommand(getCmdDelete, "Cleart den Discord Server").queue();
     }
 
     public JDA getBot() {

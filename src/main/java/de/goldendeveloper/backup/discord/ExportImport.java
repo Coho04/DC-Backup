@@ -1,5 +1,6 @@
 package de.goldendeveloper.backup.discord;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -12,21 +13,23 @@ import java.util.concurrent.ExecutionException;
 
 public class ExportImport {
 
-    public static String PERMISSIONS = "permissions";
-    public static String TYPE = "type";
-    public static String ROLES = "roles";
-    public static String POSITION = "position";
-    public static String USERLIMIT = "userlimit";
-    public static String NAME = "name";
-    public static String DESCRIPTION = "description";
-    public static String TOPIC = "topic";
-    public static String CATEGORY = "category";
-    public static String CHANNELS = "channels";
-    public static String AFKCHANNEL = "afkchannel";
-    public static String AFKTIMEOUT = "afktimeout";
-    public static String SYSTEMMESSAGECHANNEL = "systemmessagechannel";
-    public static String DEFAULTNOTIFICATIONLEVEL = "defaultnotificationlevel";
-    public static String NSFW = "nsfw";
+    public static final String PERMISSIONS = "permissions";
+    public static final String TYPE = "type";
+    public static final String ROLES = "roles";
+    public static final String POSITION = "position";
+    public static final String ALLOWED = "allowed";
+    public static final String DENIED = "denied";
+    public static final String USERLIMIT = "userlimit";
+    public static final String NAME = "name";
+    public static final String DESCRIPTION = "description";
+    public static final String TOPIC = "topic";
+    public static final String CATEGORY = "category";
+    public static final String CHANNELS = "channels";
+    public static final String AFKCHANNEL = "afkchannel";
+    public static final String AFKTIMEOUT = "afktimeout";
+    public static final String SYSTEMMESSAGECHANNEL = "systemmessagechannel";
+    public static final String DEFAULTNOTIFICATIONLEVEL = "defaultnotificationlevel";
+    public static final String NSFW = "nsfw";
 
 
     public static File Export(Guild guild) {
@@ -62,8 +65,7 @@ public class ExportImport {
                             sb.append(System.lineSeparator());
                             line = br.readLine();
                         }
-                        ClearDiscordServer(guild);
-                        ImportBackup(new JSONObject(sb.toString()), guild);
+                        ClearDiscordServer(sb.toString(), guild);
                     } catch (ExecutionException | InterruptedException | IOException ex) {
                         ex.printStackTrace();
                     } finally {
@@ -88,7 +90,9 @@ public class ExportImport {
 
         JSONObject roles = new JSONObject();
         for (Role role : guild.getRoles()) {
-            roles.put(role.getName(), getRole(role));
+            if (!role.isManaged()) {
+                roles.put(role.getName(), getRole(role));
+            }
         }
 
         JSONObject json = new JSONObject();
@@ -109,7 +113,7 @@ public class ExportImport {
 
     public static JSONObject getRole(Role r) {
         JSONObject role = new JSONObject();
-        role.put(PERMISSIONS, "comming soon");
+        role.put(PERMISSIONS, getRolePermissions(r));
         role.put(POSITION, r.getPosition());
         return role;
     }
@@ -135,7 +139,7 @@ public class ExportImport {
             TextChannel textChannel = guildChannel.getJDA().getTextChannelById(guildChannel.getId());
             if (textChannel != null) {
                 channelJson.put(TYPE, "text");
-                channelJson.put(NSFW, "" + textChannel.isNSFW() + "");
+                channelJson.put(NSFW, textChannel.isNSFW());
                 channelJson.put(POSITION, textChannel.getPosition());
                 channelJson.put(DESCRIPTION, textChannel.getTopic());
             }
@@ -161,12 +165,104 @@ public class ExportImport {
                 channelJson.put(TOPIC, newsChannel.getTopic());
             }
         }
-        channelJson.put(ROLES, "Hier kommen die Rollen hin");
-        channelJson.put(PERMISSIONS, "comming soon");
+        channelJson.put(PERMISSIONS, getRoles(guildChannel.getJDA().getGuildChannelById(guildChannel.getId())));
         return channelJson;
     }
 
-    public static void ClearDiscordServer(@NotNull Guild guild) {
+    public static JSONArray getRolePermissions(Role r) {
+        JSONArray permissions = new JSONArray();
+        for (Object v : r.getPermissions().toArray()) {
+            permissions.put(v);
+        }
+        return permissions;
+    }
+
+    public static JSONObject getRoles(GuildChannel channel) {
+        JSONObject roles = new JSONObject();
+        for (Role role : channel.getGuild().getRoles()) {
+            if (!role.isManaged()) {
+                roles.put(role.getName(), getChannelPermissions(role, channel));
+            }
+        }
+        return roles;
+    }
+
+    public static JSONObject getChannelPermissions(Role role, GuildChannel ch) {
+        JSONObject permissions = new JSONObject();
+        permissions.put(ALLOWED, getAllowed(role, ch));
+        permissions.put(DENIED, getDenied(role, ch));
+        return permissions;
+    }
+
+    public static JSONArray getAllowed(Role role, GuildChannel ch) {
+        JSONArray allowed = new JSONArray();
+        if (ch.getType().equals(ChannelType.TEXT)) {
+            PermissionOverride perm = ch.getJDA().getTextChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getAllowed().toArray()) {
+                    allowed.put(v);
+                }
+            }
+        } else if (ch.getType().equals(ChannelType.VOICE)) {
+            PermissionOverride perm = ch.getJDA().getVoiceChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getAllowed().toArray()) {
+                    allowed.put(v);
+                }
+            }
+        } else if (ch.getType().equals(ChannelType.NEWS)) {
+            PermissionOverride perm = ch.getJDA().getNewsChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getAllowed().toArray()) {
+                    allowed.put(v);
+                }
+            }
+        } else if (ch.getType().equals(ChannelType.STAGE)) {
+            PermissionOverride perm = ch.getJDA().getStageChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getAllowed().toArray()) {
+                    allowed.put(v);
+                }
+            }
+        }
+        return allowed;
+    }
+
+    public static JSONArray getDenied(Role role, GuildChannel ch) {
+        JSONArray denied = new JSONArray();
+        if (ch.getType().equals(ChannelType.TEXT)) {
+            PermissionOverride perm = ch.getJDA().getTextChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getDenied().toArray()) {
+                    denied.put(v);
+                }
+            }
+        } else if (ch.getType().equals(ChannelType.VOICE)) {
+            PermissionOverride perm = ch.getJDA().getVoiceChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getDenied().toArray()) {
+                    denied.put(v);
+                }
+            }
+        } else if (ch.getType().equals(ChannelType.NEWS)) {
+            PermissionOverride perm = ch.getJDA().getNewsChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getDenied().toArray()) {
+                    denied.put(v);
+                }
+            }
+        } else if (ch.getType().equals(ChannelType.STAGE)) {
+            PermissionOverride perm = ch.getJDA().getStageChannelById(ch.getId()).getPermissionOverride(role);
+            if (perm != null) {
+                for (Object v : perm.getDenied().toArray()) {
+                    denied.put(v);
+                }
+            }
+        }
+        return denied;
+    }
+
+    public static void ClearDiscordServer(String sb, @NotNull Guild guild) {
         if (!guild.getCategories().isEmpty()) {
             for (Category category : guild.getCategories()) {
                 category.delete().queue();
@@ -175,9 +271,8 @@ public class ExportImport {
         if (!guild.getRoles().isEmpty()) {
             for (Role role : guild.getRoles()) {
                 if (guild.getSelfMember().canInteract(role) && !role.isManaged()) {
-                    try {
+                    if (!role.isPublicRole()) {
                         role.delete().queue();
-                    } catch (Exception ignored) {
                     }
                 }
             }
@@ -202,6 +297,7 @@ public class ExportImport {
                 stageChannel.delete().queue();
             }
         }
+        ImportBackup(new JSONObject(sb), guild);
     }
 
     public static void ImportBackup(@NotNull JSONObject json, @NotNull Guild guild) {
@@ -210,6 +306,7 @@ public class ExportImport {
         if (guild.getFeatures().contains("COMMUNITY")) {
             guild.getManager().setDescription(json.getString(DESCRIPTION)).queue();
         }
+        ImportRoles(json, guild);
         JSONObject category = json.getJSONObject(CATEGORY);
         JSONArray jsonArray = category.names();
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -229,27 +326,26 @@ public class ExportImport {
                                 msg.createTextChannel(name).queue(channel -> {
                                     if (channelObject.has(DESCRIPTION)) {
                                         channel.getManager().setTopic(channelObject.getString(DESCRIPTION)).queue();
-                                        boolean nsfw = false;
-                                        if (channelObject.has(NSFW)) {
-                                            System.out.println("NSFW: " + channelObject.get(NSFW));
-                                            if (channelObject.getString(NSFW).equalsIgnoreCase("true")) {
-                                                nsfw = true;
-                                            }
-                                        }
-                                        System.out.println(nsfw);
-                                        channel.getManager().setNSFW(nsfw).queue();
-                                        channel.getManager().setPosition(channelObject.getInt(POSITION)).queue();
                                     }
+                                    if (channelObject.has(NSFW)) {
+                                        if (channelObject.getBoolean(NSFW)) {
+                                            channel.getManager().setNSFW(true).queue();
+                                        }
+                                    }
+                                    setChannelRolePermissions(channelObject, guild, channel);
+                                    channel.getManager().setPosition(channelObject.getInt(POSITION)).queue();
                                 });
                             } else if (type.equalsIgnoreCase("voice")) {
                                 msg.createVoiceChannel(name).queue(channel -> {
                                     channel.getManager().setPosition(channelObject.getInt(POSITION)).queue();
                                     channel.getManager().setUserLimit(channelObject.getInt(USERLIMIT)).queue();
+                                    setChannelRolePermissions(channelObject, guild, channel);
                                 });
                             } else if (type.equalsIgnoreCase("stage")) {
                                 if (guild.getFeatures().contains("COMMUNITY")) {
                                     msg.createStageChannel(name).queue(channel -> {
                                         channel.getManager().setPosition(channelObject.getInt(POSITION)).queue();
+                                        setChannelRolePermissions(channelObject, guild, channel);
                                     });
                                 }
                             } else if (type.equalsIgnoreCase("news")) {
@@ -257,7 +353,12 @@ public class ExportImport {
                                     msg.createTextChannel(name).queue(channel -> {
                                         channel.getManager().setType(ChannelType.NEWS).setTopic(channelObject.getString(TOPIC)).queue();
                                         channel.getManager().setPosition(channelObject.getInt(POSITION)).queue();
-                                        channel.getManager().setNSFW(channelObject.getBoolean(NSFW)).queue();
+                                        if (channelObject.has(NSFW)) {
+                                            if (channelObject.getBoolean(NSFW)) {
+                                                channel.getManager().setNSFW(true).queue();
+                                            }
+                                        }
+                                        setChannelRolePermissions(channelObject, guild, channel);
                                     });
                                 }
                             }
@@ -266,7 +367,6 @@ public class ExportImport {
                 }
             });
         }
-
         if (json.has(AFKCHANNEL)) {
             List<VoiceChannel> afkchannel = guild.getVoiceChannelsByName(json.getString(AFKCHANNEL), true);
             if (!afkchannel.isEmpty()) {
@@ -282,12 +382,85 @@ public class ExportImport {
                 guild.getManager().setSystemChannel(systemchannel.get(0)).queue();
             }
         }
+    }
 
+    public static void setChannelRolePermissions(JSONObject channelObject, Guild guild, Channel channel) {
+        JSONObject permissions = channelObject.getJSONObject(PERMISSIONS);
+        JSONArray roles = permissions.names();
+        if (roles != null) {
+            if (!roles.toList().isEmpty()) {
+                for (int c = 0; c < roles.length(); c++) {
+                    List<Role> roles1 = guild.getRolesByName(roles.getString(c), true);
+                    if (!roles1.isEmpty()) {
+                        Role role = roles1.get(0);
+                        if (role != null) {
+                            JSONArray allowed = permissions.getJSONObject(roles.getString(c)).getJSONArray(ALLOWED);
+                            for (Object allow : allowed.toList()) {
+                                if (channel.getType().equals(ChannelType.TEXT)) {
+                                    TextChannel ch = channel.getJDA().getTextChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setAllowed(Permission.valueOf(allow.toString())).queue();
+                                    }
+                                } else if (channel.getType().equals(ChannelType.VOICE)) {
+                                    VoiceChannel ch = channel.getJDA().getVoiceChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setAllowed(Permission.valueOf(allow.toString())).queue();
+                                    }
+                                } else if (channel.getType().equals(ChannelType.NEWS)) {
+                                    NewsChannel ch = channel.getJDA().getNewsChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setAllowed(Permission.valueOf(allow.toString())).queue();
+                                    }
+                                } else if (channel.getType().equals(ChannelType.STAGE)) {
+                                    StageChannel ch = channel.getJDA().getStageChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setAllowed(Permission.valueOf(allow.toString())).queue();
+                                    }
+                                }
+                            }
+                            JSONArray denied = permissions.getJSONObject(roles.getString(c)).getJSONArray(DENIED);
+                            for (Object deny : denied.toList()) {
+                                if (channel.getType().equals(ChannelType.TEXT)) {
+                                    TextChannel ch = channel.getJDA().getTextChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setDenied(Permission.valueOf(deny.toString())).queue();
+                                    }
+                                } else if (channel.getType().equals(ChannelType.VOICE)) {
+                                    VoiceChannel ch = channel.getJDA().getVoiceChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setDenied(Permission.valueOf(deny.toString())).queue();
+                                    }
+                                } else if (channel.getType().equals(ChannelType.NEWS)) {
+                                    NewsChannel ch = channel.getJDA().getNewsChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setDenied(Permission.valueOf(deny.toString())).queue();
+                                    }
+                                } else if (channel.getType().equals(ChannelType.STAGE)) {
+                                    StageChannel ch = channel.getJDA().getStageChannelById(channel.getId());
+                                    if (ch != null) {
+                                        ch.upsertPermissionOverride(role).setDenied(Permission.valueOf(deny.toString())).queue();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void ImportRoles(JSONObject json, Guild guild) {
         JSONObject roles = json.getJSONObject(ROLES);
         JSONArray rolesArray = roles.names();
         for (int i = 0; i < rolesArray.length(); i++) {
             String name = rolesArray.get(i).toString();
-            guild.createRole().setName(name).queue();
+            JSONObject obj = roles.getJSONObject(name);
+            guild.createRole().setName(name).queue(role -> {
+                JSONArray permissions = obj.getJSONArray(PERMISSIONS);
+                for (Object c : permissions.toList()) {
+                    role.getManager().setPermissions(Permission.valueOf(c.toString())).queue();
+                }
+            });
         }
     }
 }

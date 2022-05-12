@@ -55,15 +55,14 @@ public class Events extends ListenerAdapter {
         } else if (cmd.equalsIgnoreCase(Discord.getCmdBackup)) {
             File file = ExportImport.Export(e.getGuild());
             e.reply("Bitte das Backup gut aufbewahren!").addFile(file).queue(m -> {
-                file.delete();
+                File f = new File("ServerBackup-" + e.getGuild().getId() + ".gd");
+                if (!f.delete()) {
+                    System.out.println("ERROR: Failed to delete the file: " + "ServerBackup-" + e.getGuild().getId() + ".gd");
+                }
             });
         } else if (cmd.equalsIgnoreCase(Discord.getCmdImport)) {
             if (e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
                 ExportImport.Import(e.getGuild(), e.getTextChannel());
-            }
-        } else if (cmd.equalsIgnoreCase(Discord.getCmdDelete)) {
-            if (e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-                ExportImport.ClearDiscordServer(e.getGuild());
             }
         }
     }
