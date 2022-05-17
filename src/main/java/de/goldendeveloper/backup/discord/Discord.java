@@ -12,6 +12,9 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Properties;
 
 public class Discord {
 
@@ -52,10 +55,25 @@ public class Discord {
     private void Online() {
         WebhookEmbedBuilder embed = new WebhookEmbedBuilder();
         embed.setAuthor(new WebhookEmbed.EmbedAuthor(getBot().getSelfUser().getName(), getBot().getSelfUser().getAvatarUrl(), "https://Golden-Developer.de"));
-        embed.addField(new WebhookEmbed.EmbedField(false, "[Status]", "ONLINE"));
         embed.setColor(0x00FF00);
+        embed.addField(new WebhookEmbed.EmbedField(false, "[Status]", "ONLINE"));
+        embed.addField(new WebhookEmbed.EmbedField(false, "Gestartet als", bot.getSelfUser().getName()));
+        embed.addField(new WebhookEmbed.EmbedField(false, "Server", Integer.toString(bot.getGuilds().size())));
+        embed.addField(new WebhookEmbed.EmbedField(false, "Status", "\uD83D\uDFE2 Gestartet"));
+        embed.addField(new WebhookEmbed.EmbedField(false, "Version", getProjektVersion()));
         embed.setFooter(new WebhookEmbed.EmbedFooter("@Golden-Developer", getBot().getSelfUser().getAvatarUrl()));
+        embed.setTimestamp(new Date().toInstant());
         new WebhookClientBuilder(Main.getConfig().getDiscordWebhook()).build().send(embed.build());
+    }
+
+    private String getProjektVersion() {
+        Properties properties = new Properties();
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return properties.getProperty("version");
     }
 
     private void registerCommands() {
