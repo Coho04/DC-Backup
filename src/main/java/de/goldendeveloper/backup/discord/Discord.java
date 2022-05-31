@@ -6,6 +6,7 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import de.goldendeveloper.backup.Main;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -20,10 +21,11 @@ public class Discord {
 
     private JDA bot;
 
-    public static String getCmdShutdown = "shutdown";
-    public static String getCmdRestart = "restart";
-    public static String getCmdBackup = "discord-backup";
-    public static String getCmdImport = "discord-import";
+    public static String cmdShutdown = "shutdown";
+    public static String cmdRestart = "restart";
+    public static String cmdHelp = "help";
+    public static String cmdBackup = "discord-backup";
+    public static String cmdImport = "discord-import";
 
     public Discord(String token) {
         try {
@@ -47,6 +49,7 @@ public class Discord {
             if (!System.getProperty("os.name").split(" ")[0].equalsIgnoreCase("windows")) {
                 Online();
             }
+            bot.getPresence().setActivity(Activity.playing("/help | " + bot.getGuilds().size() + " Servern"));
         } catch (LoginException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -66,7 +69,7 @@ public class Discord {
         new WebhookClientBuilder(Main.getConfig().getDiscordWebhook()).build().send(embed.build());
     }
 
-    private String getProjektVersion() {
+    public String getProjektVersion() {
         Properties properties = new Properties();
         try {
             properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
@@ -75,12 +78,22 @@ public class Discord {
         }
         return properties.getProperty("version");
     }
+    public String getProjektName() {
+        Properties properties = new Properties();
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return properties.getProperty("name");
+    }
 
     private void registerCommands() {
-        bot.upsertCommand(getCmdShutdown, "Fährt den Bot herunter").queue();
-        bot.upsertCommand(getCmdBackup, "Macht ein Backup des Discord Servers").queue();
-        bot.upsertCommand(getCmdImport, "Importiert ein Discord Server Backup!").queue();
-        bot.upsertCommand(getCmdRestart, "Startet den Bot neu").queue();
+        bot.upsertCommand(cmdShutdown, "Fährt den " + bot.getSelfUser().getName() + " Bot herunter").queue();
+        bot.upsertCommand(cmdBackup, "Macht ein Backup des Discord Servers").queue();
+        bot.upsertCommand(cmdImport, "Importiert ein Discord Server Backup!").queue();
+        bot.upsertCommand(cmdRestart, "Startet den Bot neu").queue();
+        bot.upsertCommand(cmdHelp, "Zeigt dir eine Liste möglicher Befehle an!").queue();
     }
 
     public JDA getBot() {
