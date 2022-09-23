@@ -1,0 +1,72 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Deploy Java
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java version
+        uses: actions/setup-java@v3
+        with:
+          java-version: '18'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install
+      - name: Get Maven Artifact ID
+        env:
+          VERSION:
+            mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec 2>/dev/null
+          ARTIFACT:
+            mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec 2>/dev/null
+        run: echo '${{ github.repository }}'
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java version
+        uses: actions/setup-java@v3
+        with:
+          java-version: '18'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v2
+      - name: Build Jar
+        run: cd ${{ github.workspace }} && mvn install
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          local-dir: '${{ github.workspace }}/target/'
+          server-dir: ${{ secrets.SERVER_DIR }}
+          exclude: |
+            **/classes/**
+            **/generated-sources/**
+            **/maven-archiver/**
+            **/maven-status/**
+      - name: ls -a via ssh
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd '${{ secrets.SERVER_DIR }}'
+            ./start.sh
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USERNAME }}
+          pass : ${{ secrets.PASSWORD }}

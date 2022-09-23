@@ -30,7 +30,7 @@ public class Config {
             if (local != null && Files.exists(path)) {
                 readXML(local);
             } else {
-                File file = new File("/home/Golden-Developer/JavaBots/GD-Entertainment/config/Login.xml");
+                File file = new File("/home/Golden-Developer/JavaBots/GD-Backup/config/Login.xml");
                 InputStream targetStream = new FileInputStream(file);
                 readXML(targetStream);
             }
