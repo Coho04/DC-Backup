@@ -7,13 +7,14 @@ import de.goldendeveloper.backup.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -89,8 +90,7 @@ public class Events extends ListenerAdapter {
                 e.getInteraction().reply("Dazu hast du keine Rechte, du musst für diesen Befehl der Bot Inhaber sein!").queue();
             }
         } else if (cmd.equalsIgnoreCase(Discord.cmdBackup)) {
-            File file = ExportImport.Export(e.getGuild());
-            e.reply("Bitte das Backup gut aufbewahren!").addFile(file).queue(m -> {
+            e.reply("Bitte das Backup gut aufbewahren!").addFiles(FileUpload.fromData(ExportImport.Export(e.getGuild()))).queue(m -> {
                 File f = new File("ServerBackup-" + e.getGuild().getId() + ".gd");
                 if (!f.delete()) {
                     System.out.println("ERROR: Failed to delete the file: " + "ServerBackup-" + e.getGuild().getId() + ".gd");
@@ -98,7 +98,7 @@ public class Events extends ListenerAdapter {
             });
         } else if (cmd.equalsIgnoreCase(Discord.cmdImport)) {
             if (e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-                ExportImport.Import(e.getGuild(), e.getTextChannel());
+                ExportImport.Import(e.getGuild(), e.getChannel().asTextChannel());
             }
         }
     }
