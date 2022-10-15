@@ -57,9 +57,14 @@ public class Discord {
 
     private void Online() {
         WebhookEmbedBuilder embed = new WebhookEmbedBuilder();
+        if (Main.getRestart()) {
+            embed.setColor(0x33FFFF);
+            embed.addField(new WebhookEmbed.EmbedField(false, "[Status]", "Neustart erfolgreich"));
+        } else {
+            embed.setColor(0x00FF00);
+            embed.addField(new WebhookEmbed.EmbedField(false, "[Status]", "ONLINE"));
+        }
         embed.setAuthor(new WebhookEmbed.EmbedAuthor(getBot().getSelfUser().getName(), getBot().getSelfUser().getAvatarUrl(), "https://Golden-Developer.de"));
-        embed.setColor(0x00FF00);
-        embed.addField(new WebhookEmbed.EmbedField(false, "[Status]", "ONLINE"));
         embed.addField(new WebhookEmbed.EmbedField(false, "Gestartet als", bot.getSelfUser().getName()));
         embed.addField(new WebhookEmbed.EmbedField(false, "Server", Integer.toString(bot.getGuilds().size())));
         embed.addField(new WebhookEmbed.EmbedField(false, "Status", "\uD83D\uDFE2 Gestartet"));
