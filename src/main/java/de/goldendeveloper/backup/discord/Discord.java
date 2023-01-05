@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
