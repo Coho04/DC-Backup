@@ -6,6 +6,7 @@ public class Main {
 
     private static Discord discord;
     private static Config config;
+    private static ServerCommunicator serverCommunicator;
 
     private static Boolean restart = false;
     private static Boolean deployment = true;
@@ -18,6 +19,7 @@ public class Main {
             deployment = false;
         }
         config = new Config();
+        serverCommunicator = new ServerCommunicator(config.getServerHostname(), config.getServerPort());
         discord = new Discord(config.getDiscordToken());
     }
 
@@ -35,5 +37,9 @@ public class Main {
 
     public static Boolean getDeployment() {
         return deployment;
+    }
+
+    public static ServerCommunicator getServerCommunicator() {
+        return serverCommunicator;
     }
 }

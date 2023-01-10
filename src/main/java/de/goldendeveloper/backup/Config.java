@@ -21,6 +21,8 @@ public class Config {
 
     private String DiscordToken;
     private String DiscordWebhook;
+    private String ServerHostname;
+    private int ServerPort;
 
     public Config() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
@@ -30,7 +32,7 @@ public class Config {
             if (local != null && Files.exists(path)) {
                 readXML(local);
             } else {
-                File file = new File("/home/Golden-Developer/JavaBots/GD-Backup/config/Login.xml");
+                File file = new File("/home/Golden-Developer/JavaBots/" + Main.getDiscord().getProjektName() + "/config/Login.xml");
                 InputStream targetStream = new FileInputStream(file);
                 readXML(targetStream);
             }
@@ -60,6 +62,20 @@ public class Config {
                     }
                 }
             }
+            list = doc.getElementsByTagName("Server");
+            for (int i = 0; i < list.getLength(); i++) {
+                if (list.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) list.item(i);
+                    String hostname = element.getElementsByTagName("Hostname").item(0).getTextContent();
+                    String port = doc.getElementsByTagName("Port").item(1).getTextContent();
+                    if (!hostname.isEmpty() || !hostname.isBlank()) {
+                        this.ServerHostname = hostname;
+                    }
+                    if (!port.isEmpty() || !port.isBlank()) {
+                        this.ServerPort = Integer.parseInt(port);
+                    }
+                }
+            }
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
@@ -71,6 +87,14 @@ public class Config {
 
     public String getDiscordToken() {
         return DiscordToken;
+    }
+
+    public int getServerPort() {
+        return ServerPort;
+    }
+
+    public String getServerHostname() {
+        return ServerHostname;
     }
 
 }

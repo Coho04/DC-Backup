@@ -4,6 +4,7 @@ import club.minnced.discord.webhook.WebhookClientBuilder;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import de.goldendeveloper.backup.Main;
+import de.goldendeveloper.backup.ServerCommunicator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -43,11 +44,13 @@ public class Events extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
+        Main.getServerCommunicator().sendToServer(ServerCommunicator.action.ADD, e.getGuild().getId());
         e.getJDA().getPresence().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
     }
 
     @Override
     public void onGuildLeave(GuildLeaveEvent e) {
+        Main.getServerCommunicator().sendToServer(ServerCommunicator.action.REMOVE, e.getGuild().getId());
         e.getJDA().getPresence().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
     }
 
