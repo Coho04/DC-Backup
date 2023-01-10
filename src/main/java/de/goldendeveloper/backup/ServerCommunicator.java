@@ -31,7 +31,7 @@ public class ServerCommunicator {
             OutputStream raus = socket.getOutputStream();
             OutputStreamWriter osw = new OutputStreamWriter(raus, StandardCharsets.UTF_8);
             JSONObject msg = new JSONObject();
-            msg.put("name", Main.getDiscord().getProjektName());
+            msg.put("name", Main.getConfig().getProjektName());
             msg.put("action", action);
             msg.put("server", serverId);
             osw.write(msg.toString());

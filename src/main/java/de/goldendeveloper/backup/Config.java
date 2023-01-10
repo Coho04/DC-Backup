@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
 
 public class Config {
 
@@ -32,7 +33,7 @@ public class Config {
             if (local != null && Files.exists(path)) {
                 readXML(local);
             } else {
-                File file = new File("/home/Golden-Developer/JavaBots/" + Main.getDiscord().getProjektName() + "/config/Login.xml");
+                File file = new File("/home/Golden-Developer/JavaBots/" + getProjektName() + "/config/Login.xml");
                 InputStream targetStream = new FileInputStream(file);
                 readXML(targetStream);
             }
@@ -95,6 +96,25 @@ public class Config {
 
     public String getServerHostname() {
         return ServerHostname;
+    }
+
+    public String getProjektVersion() {
+        Properties properties = new Properties();
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return properties.getProperty("version");
+    }
+    public String getProjektName() {
+        Properties properties = new Properties();
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return properties.getProperty("name");
     }
 
 }

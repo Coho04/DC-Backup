@@ -12,9 +12,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.Properties;
 
 public class Discord {
 
@@ -67,30 +65,13 @@ public class Discord {
         embed.addField(new WebhookEmbed.EmbedField(false, "Gestartet als", bot.getSelfUser().getName()));
         embed.addField(new WebhookEmbed.EmbedField(false, "Server", Integer.toString(bot.getGuilds().size())));
         embed.addField(new WebhookEmbed.EmbedField(false, "Status", "\uD83D\uDFE2 Gestartet"));
-        embed.addField(new WebhookEmbed.EmbedField(false, "Version", getProjektVersion()));
+        embed.addField(new WebhookEmbed.EmbedField(false, "Version", Main.getConfig().getProjektVersion()));
         embed.setFooter(new WebhookEmbed.EmbedFooter("@Golden-Developer", getBot().getSelfUser().getAvatarUrl()));
         embed.setTimestamp(new Date().toInstant());
         new WebhookClientBuilder(Main.getConfig().getDiscordWebhook()).build().send(embed.build());
     }
 
-    public String getProjektVersion() {
-        Properties properties = new Properties();
-        try {
-            properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return properties.getProperty("version");
-    }
-    public String getProjektName() {
-        Properties properties = new Properties();
-        try {
-            properties.load(this.getClass().getClassLoader().getResourceAsStream("project.properties"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return properties.getProperty("name");
-    }
+
 
     private void registerCommands() {
         bot.upsertCommand(cmdShutdown, "Fährt den " + bot.getSelfUser().getName() + " Bot herunter").queue();
