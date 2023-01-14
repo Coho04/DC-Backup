@@ -1,5 +1,6 @@
 package de.goldendeveloper.backup;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import org.json.JSONObject;
@@ -29,17 +30,17 @@ public class ServerCommunicator {
         this.PORT = PORT;
     }
 
-    public void startBot() {
+    public void startBot(JDA bot) {
         Socket socket = null;
         try {
             socket = new Socket(this.HOSTNAME, this.PORT);
             OutputStream raus = socket.getOutputStream();
             OutputStreamWriter osw = new OutputStreamWriter(raus, StandardCharsets.UTF_8);
             JSONObject msg = new JSONObject();
-            msg.put("name", Main.getDiscord().getBot().getSelfUser().getName());
-            msg.put("invite", Main.getDiscord().getBot().getInviteUrl(Permission.ADMINISTRATOR));
+            msg.put("name", bot.getSelfUser().getName());
+            msg.put("invite", bot.getInviteUrl(Permission.ADMINISTRATOR));
             msg.put("type", action.START);
-            msg.put("commands", Main.getDiscord().getBot().retrieveCommands().complete());
+            msg.put("commands",bot.retrieveCommands().complete());
             msg.put("server", getGuildIDsFromGuilds());
             osw.write(msg.toString());
             osw.flush();

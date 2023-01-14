@@ -45,7 +45,7 @@ public class Discord {
             registerCommands();
             if (!System.getProperty("os.name").split(" ")[0].equalsIgnoreCase("windows")) {
                 Online();
-                Main.getServerCommunicator().startBot();
+                Main.getServerCommunicator().startBot(bot);
             }
             bot.getPresence().setActivity(Activity.playing("/help | " + bot.getGuilds().size() + " Servern"));
         } catch (InterruptedException e) {
