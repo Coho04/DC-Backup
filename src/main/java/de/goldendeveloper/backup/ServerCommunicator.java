@@ -3,6 +3,7 @@ package de.goldendeveloper.backup;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -40,8 +41,8 @@ public class ServerCommunicator {
             msg.put("name", bot.getSelfUser().getName());
             msg.put("invite", bot.getInviteUrl(Permission.ADMINISTRATOR));
             msg.put("type", action.START);
-            msg.put("commands",bot.retrieveCommands().complete());
-            msg.put("server", getGuildIDsFromGuilds());
+            msg.put("commands",getCommandNameFromCommands(bot.retrieveCommands().complete()));
+            msg.put("server", getGuildIDsFromGuilds(bot));
             osw.write(msg.toString());
             osw.flush();
             osw.close();
@@ -130,11 +131,19 @@ public class ServerCommunicator {
         }
     }
 
-    public List<String> getGuildIDsFromGuilds() {
+    public List<String> getGuildIDsFromGuilds(JDA jda) {
         List<String> ids = new ArrayList<>();
-        for (Guild guild : Main.getDiscord().getBot().getGuilds()) {
+        for (Guild guild : jda.getGuilds()) {
             ids.add(guild.getId());
         }
         return ids;
+    }
+
+    public List<String> getCommandNameFromCommands(List<Command> commands) {
+        List<String> commandNames = new ArrayList<>();
+        for (Command command : commands) {
+            commandNames.add(command.getName());
+        }
+        return commandNames;
     }
 }

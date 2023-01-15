@@ -43,7 +43,7 @@ public class Discord {
                     .setContextEnabled(true)
                     .build().awaitReady();
             registerCommands();
-            if (!System.getProperty("os.name").split(" ")[0].equalsIgnoreCase("windows")) {
+            if (Main.getDeployment()) {
                 Online();
                 Main.getServerCommunicator().startBot(bot);
             }
