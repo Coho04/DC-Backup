@@ -5,6 +5,7 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import de.goldendeveloper.backup.Main;
 import de.goldendeveloper.backup.ServerCommunicator;
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -87,7 +88,7 @@ public class Events extends ListenerAdapter {
                     p.waitFor();
                     e.getJDA().shutdown();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    Sentry.captureException(ex);
                 }
             } else {
                 e.getInteraction().reply("Dazu hast du keine Rechte, du musst für diesen Befehl der Bot Inhaber sein!").queue();

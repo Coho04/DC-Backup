@@ -1,5 +1,6 @@
 package de.goldendeveloper.backup.discord;
 
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -43,8 +44,8 @@ public class ExportImport {
             FileWriter file = new FileWriter(fileName);
             file.write(jsonObject.toString());
             file.close();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException e) {
+            Sentry.captureException(e);
         }
         return new File(fileName);
     }
@@ -58,11 +59,11 @@ public class ExportImport {
                     try {
                         br = new BufferedReader(new FileReader(f.get()));
                         StringBuilder sb = new StringBuilder();
-                        String line;
+                        String line = null;
                         try {
                             line = br.readLine();
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
+                        } catch (IOException e) {
+                            Sentry.captureException(e);
                         }
                         while (line != null) {
                             sb.append(line);
@@ -70,15 +71,15 @@ public class ExportImport {
                             line = br.readLine();
                         }
                         ClearDiscordServer(sb.toString(), guild);
-                    } catch (ExecutionException | InterruptedException | IOException ex) {
-                        ex.printStackTrace();
+                    } catch (ExecutionException | InterruptedException | IOException e) {
+                        Sentry.captureException(e);
                     } finally {
                         try {
                             if (br != null) {
                                 br.close();
                             }
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
+                        } catch (IOException e) {
+                            Sentry.captureException(e);
                         }
                     }
                 }

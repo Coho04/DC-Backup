@@ -25,6 +25,8 @@ public class Config {
     private String ServerHostname;
     private int ServerPort;
 
+    private String sentryDNS;
+
     public Config() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream local = classloader.getResourceAsStream("Login.xml");
@@ -77,6 +79,10 @@ public class Config {
                     }
                 }
             }
+            String sentryDNS = doc.getElementsByTagName("sentry").item(0).getTextContent();
+            if (!sentryDNS.isEmpty() || !sentryDNS.isBlank()) {
+                this.sentryDNS = sentryDNS;
+            }
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
@@ -98,6 +104,10 @@ public class Config {
         return ServerHostname;
     }
 
+    public String getSentryDNS() {
+        return sentryDNS;
+    }
+
     public String getProjektVersion() {
         Properties properties = new Properties();
         try {
@@ -116,5 +126,4 @@ public class Config {
         }
         return properties.getProperty("name");
     }
-
 }

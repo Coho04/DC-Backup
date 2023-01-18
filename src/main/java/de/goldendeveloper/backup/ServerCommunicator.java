@@ -1,5 +1,6 @@
 package de.goldendeveloper.backup;
 
+import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -46,20 +47,14 @@ public class ServerCommunicator {
             osw.write(msg.toString());
             osw.flush();
             osw.close();
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown Host...");
-            e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("IOProbleme...");
-            e.printStackTrace();
+            Sentry.captureException(e);
         } finally {
             if (socket != null) {
                 try {
                     socket.close();
-                    System.out.println("Socket geschlossen...");
                 } catch (IOException e) {
-                    System.out.println("Socket konnte nicht geschlossen werden...");
-                    e.printStackTrace();
+                    Sentry.captureException(e);
                 }
             }
         }
@@ -79,20 +74,15 @@ public class ServerCommunicator {
             osw.write(msg.toString());
             osw.flush();
             osw.close();
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown Host...");
-            e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("IOProbleme...");
-            e.printStackTrace();
+            Sentry.captureException(e);
         } finally {
             if (socket != null) {
                 try {
                     socket.close();
                     System.out.println("Socket geschlossen...");
                 } catch (IOException e) {
-                    System.out.println("Socket konnte nicht geschlossen werden...");
-                    e.printStackTrace();
+                    Sentry.captureException(e);
                 }
             }
         }
@@ -112,20 +102,15 @@ public class ServerCommunicator {
             osw.write(msg.toString());
             osw.flush();
             osw.close();
-        } catch (UnknownHostException e) {
-            System.out.println("Unknown Host...");
-            e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("IOProbleme...");
-            e.printStackTrace();
+            Sentry.captureException(e);
         } finally {
             if (socket != null) {
                 try {
                     socket.close();
                     System.out.println("Socket geschlossen...");
                 } catch (IOException e) {
-                    System.out.println("Socket konnte nicht geschlossen werden...");
-                    e.printStackTrace();
+                    Sentry.captureException(e);
                 }
             }
         }

@@ -3,6 +3,7 @@
         <Token>TOKEN</Token>
         <Webhook>WEBHOOK</Webhook>
     </Discord>
+    <sentry>SENTRY</sentry>
     <Server>
         <Hostname>HOSTNAME</Hostname>
         <Port>PORT</Port>
