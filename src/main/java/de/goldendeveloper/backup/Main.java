@@ -38,6 +38,9 @@ public class Main {
         Sentry.init(options -> {
             options.setDsn(dns);
             options.setTracesSampleRate(1.0);
+            if (getDeployment()) {
+                options.setEnvironment("prod");
+            }
         });
     }
 
