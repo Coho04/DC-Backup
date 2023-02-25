@@ -76,14 +76,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>dv8tion</id>
-            <name>m2-dv8tion</name>
-            <url>https://m2.dv8tion.net/releases</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -103,7 +95,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.2</version>
+            <version>5.0.0-beta.4</version>
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
