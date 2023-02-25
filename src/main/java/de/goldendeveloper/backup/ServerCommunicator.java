@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +41,7 @@ public class ServerCommunicator {
             msg.put("name", bot.getSelfUser().getName());
             msg.put("invite", bot.getInviteUrl(Permission.ADMINISTRATOR));
             msg.put("type", action.START);
+            msg.put("image", bot.getSelfUser().getAvatarUrl());
             msg.put("commands",getCommandNameFromCommands(bot.retrieveCommands().complete()));
             msg.put("server", getGuildIDsFromGuilds(bot));
             osw.write(msg.toString());
