@@ -22,13 +22,6 @@ public class Main {
         }
         config = new Config();
         Sentry(config.getSentryDNS());
-
-        try {
-            throw new Exception("This is a test.");
-        } catch (Exception e) {
-            Sentry.captureException(e);
-        }
-
         serverCommunicator = new ServerCommunicator(config.getServerHostname(), config.getServerPort());
         discord = new Discord(config.getDiscordToken());
     }
