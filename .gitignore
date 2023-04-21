@@ -1,3 +1,4 @@
 /target/
 /src/main/resources/Login.xml
 .idea
+.env

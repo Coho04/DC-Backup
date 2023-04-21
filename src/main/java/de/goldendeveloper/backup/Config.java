@@ -1,107 +1,41 @@
 package de.goldendeveloper.backup;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileInputStream;
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Properties;
 
 public class Config {
 
-    private String DiscordToken;
-    private String DiscordWebhook;
-    private String ServerHostname;
-    private int ServerPort;
-
-    private String sentryDNS;
+    private final String discordToken;
+    private final String discordWebhook;
+    private final String serverHostname;
+    private final int serverPort;
+    private final String sentryDNS;
 
     public Config() {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream local = classloader.getResourceAsStream("Login.xml");
-        try {
-            Path path = Files.createTempFile("Login", ".xml");
-            if (local != null && Files.exists(path)) {
-                readXML(local);
-            } else {
-                File file = new File("/home/Golden-Developer/JavaBots/" + getProjektName() + "/config/Login.xml");
-                InputStream targetStream = new FileInputStream(file);
-                readXML(targetStream);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Dotenv dotenv = Dotenv.load();
+        discordToken = dotenv.get("DISCORD_TOKEN");
+        discordWebhook = dotenv.get("DISCORD_WEBHOOK");
+        serverHostname = dotenv.get("SERVER_HOSTNAME");
+        serverPort = Integer.parseInt(dotenv.get("SERVER_PORT"));
+        sentryDNS = dotenv.get("SENTRY_DNS");
     }
 
-    private void readXML(InputStream inputStream) {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
-            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(inputStream);
-            doc.getDocumentElement().normalize();
-            NodeList list  = doc.getElementsByTagName("Discord");
-            for (int i = 0; i < list.getLength(); i++) {
-                if (list.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) list.item(i);
-                    String webhook = element.getElementsByTagName("Webhook").item(0).getTextContent();
-                    String token = doc.getElementsByTagName("Token").item(0).getTextContent();
-                    if (!webhook.isEmpty() || !webhook.isBlank()) {
-                        this.DiscordWebhook = webhook;
-                    }
-                    if (!token.isEmpty() || !token.isBlank()) {
-                        this.DiscordToken = token;
-                    }
-                }
-            }
-            list = doc.getElementsByTagName("Server");
-            for (int i = 0; i < list.getLength(); i++) {
-                if (list.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) list.item(i);
-                    String hostname = element.getElementsByTagName("Hostname").item(0).getTextContent();
-                    String port = doc.getElementsByTagName("Port").item(0).getTextContent();
-                    if (!hostname.isEmpty() || !hostname.isBlank()) {
-                        this.ServerHostname = hostname;
-                    }
-                    if (!port.isEmpty() || !port.isBlank()) {
-                        this.ServerPort = Integer.parseInt(port);
-                    }
-                }
-            }
-            String sentryDNS = doc.getElementsByTagName("sentry").item(0).getTextContent();
-            if (!sentryDNS.isEmpty() || !sentryDNS.isBlank()) {
-                this.sentryDNS = sentryDNS;
-            }
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public String getDiscordWebhook() {
-        return DiscordWebhook;
+        return discordWebhook;
     }
 
     public String getDiscordToken() {
-        return DiscordToken;
+        return discordToken;
     }
 
     public int getServerPort() {
-        return ServerPort;
+        return serverPort;
     }
 
     public String getServerHostname() {
-        return ServerHostname;
+        return serverHostname;
     }
 
     public String getSentryDNS() {
@@ -117,6 +51,7 @@ public class Config {
         }
         return properties.getProperty("version");
     }
+
     public String getProjektName() {
         Properties properties = new Properties();
         try {

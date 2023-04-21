@@ -1,7 +1,9 @@
 package de.goldendeveloper.backup;
 
 import de.goldendeveloper.backup.discord.Discord;
+import io.sentry.ITransaction;
 import io.sentry.Sentry;
+import io.sentry.SpanStatus;
 
 public class Main {
 
@@ -22,18 +24,29 @@ public class Main {
         }
         config = new Config();
         Sentry(config.getSentryDNS());
-        serverCommunicator = new ServerCommunicator(config.getServerHostname(), config.getServerPort());
+        ITransaction transaction = Sentry.startTransaction("Application()", "task");
+        try {
+            Application();
+        } catch (Exception e) {
+            transaction.setThrowable(e);
+            transaction.setStatus(SpanStatus.INTERNAL_ERROR);
+        } finally {
+            transaction.finish();
+        }
+    }
+
+    public static void Application() {
+        if (getDeployment()) {
+            serverCommunicator = new ServerCommunicator(config.getServerHostname(), config.getServerPort());
+        }
         discord = new Discord(config.getDiscordToken());
     }
 
     public static void Sentry(String dns) {
-        if (dns.isEmpty()) return;
         Sentry.init(options -> {
             options.setDsn(dns);
             options.setTracesSampleRate(1.0);
-            if (getDeployment()) {
-                options.setEnvironment("prod");
-            }
+            options.setEnvironment(Main.getDeployment() ? "Production" : "localhost");
         });
     }
 
