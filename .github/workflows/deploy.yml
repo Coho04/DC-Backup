@@ -68,5 +68,6 @@ jobs:
             cd '${{ secrets.SERVER_DIR }}'
             ./start.sh
           host: ${{ secrets.HOST }}
+          port: 222
           user: ${{ secrets.USERNAME }}
           pass : ${{ secrets.PASSWORD }}
