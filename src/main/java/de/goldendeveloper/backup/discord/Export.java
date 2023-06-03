@@ -55,11 +55,6 @@ public class Export {
         return new File(fileName);
     }
 
-    @SuppressWarnings("unused")
-    public JSONObject getJsonObject() {
-        return jsonObject;
-    }
-
     private JSONObject getRoleAsJson(Role role) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(DiscordTags.PERMISSIONS, getRolePermissionsAsJson(role));

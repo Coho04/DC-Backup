@@ -52,7 +52,6 @@ public class Import {
 
     private void clearDiscordServer(@NotNull Guild guild) {
         guild.getChannels().forEach(guildChannel -> guildChannel.delete().queue());
-        guild.getCategories().forEach(category -> category.delete().queue());
         guild.getRoles().stream()
                 .filter(role -> guild.getSelfMember().canInteract(role) && !role.isManaged())
                 .filter(role -> !role.isPublicRole())

@@ -19,10 +19,10 @@ public class BackupCommand implements CommandInterface {
 
     @Override
     public void runSlashCommand(SlashCommandInteractionEvent e, DCBot dcBot) {
-        if (e.isFromGuild()) {
+        if (e.isFromGuild() && e.getGuild() != null) {
             e.reply("Bitte das Backup gut aufbewahren!").addFiles(FileUpload.fromData(new Export(e.getGuild()).getFile())).queue(m -> {
-                File f = new File("ServerBackup-" + e.getGuild().getId() + ".gd");
-                if (!f.delete()) {
+                File file = new File("ServerBackup-" + e.getGuild().getId() + ".gd");
+                if (!file.delete()) {
                     System.out.println("ERROR: Failed to delete the file: " + "ServerBackup-" + e.getGuild().getId() + ".gd");
                 }
             });
