@@ -1,24 +1,16 @@
 package de.goldendeveloper.backup;
 
-import de.goldendeveloper.backup.discord.commands.Backup;
-import de.goldendeveloper.backup.discord.commands.Import;
+import de.goldendeveloper.backup.discord.commands.BackupCommand;
+import de.goldendeveloper.backup.discord.commands.ImportCommand;
 import de.goldendeveloper.dcbcore.DCBotBuilder;
-import de.goldendeveloper.dcbcore.interfaces.CommandInterface;
-
-import java.util.LinkedList;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Main {
 
     public static void main(String[] args) {
-        DCBotBuilder builder = new DCBotBuilder(args, true);
-        builder.registerCommands(registerCommands());
+        DCBotBuilder builder = new DCBotBuilder(args, false);
+        builder.registerGatewayIntents(GatewayIntent.MESSAGE_CONTENT);
+        builder.registerCommands(new BackupCommand(), new ImportCommand());
         builder.build();
-    }
-
-    public static LinkedList<CommandInterface> registerCommands() {
-        LinkedList<CommandInterface> commands = new LinkedList<>();
-        commands.add(new Backup());
-        commands.add(new Import());
-        return commands;
     }
 }
