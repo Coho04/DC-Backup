@@ -24,7 +24,7 @@ DC-Backup is a Discord bot written in Java using Maven, designed to backup and r
 - /ping - Shows the latency of the bot!
 
 ## License
-This project is licensed under the BSD-2-Clause license.
+This project is licensed under the MIT license.
 
 ## Support
 If you have problems or questions, you can open an issue on GitHub or contact the developer directly.
