@@ -80,7 +80,7 @@
         <repository>
             <id>golden-developer</id>
             <name>Golden-Developer</name>
-            <url>https://nexus.golden-developer.de/repository/DCB-CORE/</url>
+            <url>https://nexus.golden-developer.de/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>de.goldendeveloper</groupId>
             <artifactId>DCB-Core</artifactId>
-            <version>1.8.5</version>
+            <version>1.8.8</version>
         </dependency>
     </dependencies>
 </project>
