@@ -24,7 +24,7 @@ jobs:
       - name: Build Jar
         run: cd ${{ github.workspace }} && mvn install
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
