@@ -13,3 +13,13 @@ updates:
       - "Coho04"
     reviewers:
       - "Coho04"
+
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    assignees:
+    - "Coho04"
+    reviewers:
+    - "Coho04"
