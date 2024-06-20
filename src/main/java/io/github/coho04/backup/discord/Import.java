@@ -18,36 +18,32 @@ import java.util.concurrent.CompletableFuture;
 public class Import {
 
     public Import(Guild guild, TextChannel channel) {
-        channel.getHistory().retrievePast(1).queue(messages -> {
-            messages.forEach(message -> {
-                message.getAttachments().forEach(attachment -> {
-                    CompletableFuture<File> file = attachment.downloadToFile();
-                    BufferedReader bufferedReader = null;
-                    try {
-                        bufferedReader = new BufferedReader(new FileReader(file.get()));
-                        StringBuilder stringBuilder = new StringBuilder();
-                        String line = bufferedReader.readLine();
-                        while (line != null) {
-                            stringBuilder.append(line);
-                            stringBuilder.append(System.lineSeparator());
-                            line = bufferedReader.readLine();
-                        }
-                        clearDiscordServer(guild);
-                        importBackup(new JSONObject(stringBuilder.toString()), guild);
-                    } catch (Exception e) {
-                        Sentry.captureException(e);
-                    } finally {
-                        try {
-                            if (bufferedReader != null) {
-                                bufferedReader.close();
-                            }
-                        } catch (Exception e) {
-                            Sentry.captureException(e);
-                        }
+        channel.getHistory().retrievePast(1).queue(messages -> messages.forEach(message -> message.getAttachments().forEach(attachment -> {
+            CompletableFuture<File> file = attachment.downloadToFile();
+            BufferedReader bufferedReader = null;
+            try {
+                bufferedReader = new BufferedReader(new FileReader(file.get()));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    stringBuilder.append(line);
+                    stringBuilder.append(System.lineSeparator());
+                    line = bufferedReader.readLine();
+                }
+                clearDiscordServer(guild);
+                importBackup(new JSONObject(stringBuilder.toString()), guild);
+            } catch (Exception e) {
+                Sentry.captureException(e);
+            } finally {
+                try {
+                    if (bufferedReader != null) {
+                        bufferedReader.close();
                     }
-                });
-            });
-        });
+                } catch (Exception e) {
+                    Sentry.captureException(e);
+                }
+            }
+        })));
     }
 
     private void clearDiscordServer(@NotNull Guild guild) {
@@ -107,13 +103,9 @@ public class Import {
                     Role role = roles1.getFirst();
                     if (role != null) {
                         JSONArray allowed = permissions.getJSONObject(roles.getString(c)).getJSONArray(DiscordTags.ALLOWED);
-                        allowed.toList().forEach(allow -> {
-                            channel.upsertPermissionOverride(role).setAllowed(Permission.valueOf(allow.toString())).queue();
-                        });
+                        allowed.toList().forEach(allow -> channel.upsertPermissionOverride(role).setAllowed(Permission.valueOf(allow.toString())).queue());
                         JSONArray denied = permissions.getJSONObject(roles.getString(c)).getJSONArray(DiscordTags.DENIED);
-                        denied.toList().forEach(deny -> {
-                            channel.upsertPermissionOverride(role).setDenied(Permission.valueOf(deny.toString())).queue();
-                        });
+                        denied.toList().forEach(deny -> channel.upsertPermissionOverride(role).setDenied(Permission.valueOf(deny.toString())).queue());
                     }
                 }
             }
@@ -167,11 +159,9 @@ public class Import {
         JSONArray rolesArray = roles.names();
         for (int i = 0; i < rolesArray.length(); i++) {
             String name = rolesArray.get(i).toString();
-            guild.createRole().setName(name).queue(role -> {
-                roles.getJSONObject(name).getJSONArray(DiscordTags.PERMISSIONS).toList().forEach(c -> {
-                    role.getManager().setPermissions(Permission.valueOf(c.toString())).queue();
-                });
-            });
+            guild.createRole().setName(name).queue(role -> roles.getJSONObject(name).getJSONArray(DiscordTags.PERMISSIONS).toList().forEach(c -> {
+                role.getManager().setPermissions(Permission.valueOf(c.toString())).queue();
+            }));
         }
     }
 }
