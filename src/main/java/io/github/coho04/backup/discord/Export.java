@@ -1,4 +1,4 @@
-package de.goldendeveloper.backup.discord;
+package io.github.coho04.backup.discord;
 
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Guild;

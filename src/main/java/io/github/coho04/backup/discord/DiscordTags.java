@@ -1,4 +1,4 @@
-package de.goldendeveloper.backup.discord;
+package io.github.coho04.backup.discord;
 
 public class DiscordTags {
     public static final String PERMISSIONS = "permissions";

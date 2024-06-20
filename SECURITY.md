@@ -14,7 +14,7 @@ We take the security of our project seriously. If you discover a security issue,
 
 ### Guidelines
 
-- Please report security issues by email to contact@golden-developer.de.
+- Please report security issues by email to cohohohn04@gmail.com.
 - Describe the issue in detail so that we can easily understand and reproduce the problem.
 - Include steps to reproduce the issue if possible.
 - Provide your email address for further communication.

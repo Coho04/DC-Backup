@@ -1,6 +1,6 @@
-package de.goldendeveloper.backup.discord.commands;
+package io.github.coho04.backup.discord.commands;
 
-import de.goldendeveloper.backup.discord.Export;
+import io.github.coho04.backup.discord.Export;
 import io.github.coho04.dcbcore.DCBot;
 import io.github.coho04.dcbcore.interfaces.CommandInterface;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

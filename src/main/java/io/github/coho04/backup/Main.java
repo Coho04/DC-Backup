@@ -1,7 +1,7 @@
-package de.goldendeveloper.backup;
+package io.github.coho04.backup;
 
-import de.goldendeveloper.backup.discord.commands.BackupCommand;
-import de.goldendeveloper.backup.discord.commands.ImportCommand;
+import io.github.coho04.backup.discord.commands.BackupCommand;
+import io.github.coho04.backup.discord.commands.ImportCommand;
 import io.github.coho04.dcbcore.DCBotBuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 

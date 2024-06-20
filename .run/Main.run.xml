@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="de.goldendeveloper.backup.Main" />
+    <option name="MAIN_CLASS_NAME" value="io.github.coho04.backup.Main" />
     <module name="GD-Backup" />
     <method v="2">
       <option name="Make" enabled="true" />
