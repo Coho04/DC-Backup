@@ -83,7 +83,7 @@ public class Import {
         if (json.has(DiscordTags.AFK_CHANNEL)) {
             List<VoiceChannel> afkChannel = guild.getVoiceChannelsByName(json.getString(DiscordTags.AFK_CHANNEL), true);
             if (!afkChannel.isEmpty()) {
-                guild.getManager().setAfkChannel(afkChannel.get(0)).queue();
+                guild.getManager().setAfkChannel(afkChannel.getFirst()).queue();
             }
         }
         if (json.has(DiscordTags.DEFAULT_NOTIFICATION_LEVEL)) {
@@ -92,7 +92,7 @@ public class Import {
         if (json.has(DiscordTags.SYSTEM_MESSAGE_CHANNEL)) {
             List<TextChannel> systemChannel = guild.getTextChannelsByName(json.getString(DiscordTags.SYSTEM_MESSAGE_CHANNEL), true);
             if (!systemChannel.isEmpty()) {
-                guild.getManager().setSystemChannel(systemChannel.get(0)).queue();
+                guild.getManager().setSystemChannel(systemChannel.getFirst()).queue();
             }
         }
     }
@@ -104,7 +104,7 @@ public class Import {
             for (int c = 0; c < roles.length(); c++) {
                 List<Role> roles1 = guild.getRolesByName(roles.getString(c), true);
                 if (!roles1.isEmpty()) {
-                    Role role = roles1.get(0);
+                    Role role = roles1.getFirst();
                     if (role != null) {
                         JSONArray allowed = permissions.getJSONObject(roles.getString(c)).getJSONArray(DiscordTags.ALLOWED);
                         allowed.toList().forEach(allow -> {

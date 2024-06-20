@@ -2,7 +2,7 @@ package de.goldendeveloper.backup;
 
 import de.goldendeveloper.backup.discord.commands.BackupCommand;
 import de.goldendeveloper.backup.discord.commands.ImportCommand;
-import de.goldendeveloper.dcbcore.DCBotBuilder;
+import io.github.coho04.dcbcore.DCBotBuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Main {
