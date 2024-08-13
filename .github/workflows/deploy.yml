@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build Jar
         run: cd ${{ github.workspace }} && mvn install
-      - name: 📂 Sync files
+      - name: Deploy JAR to server via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HOST }}
@@ -38,12 +38,14 @@ jobs:
             **/maven-archiver/**
             **/maven-status/**
 
-      - name: ls -a via ssh
+      - name: SSH into server and rebuild Docker container
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd '${{ secrets.SERVER_DIR }}'
-            ./start.sh
+            cd ${{ secrets.SERVER_DIR }} && cd ../
+            docker compose down gd_sozial_watcher
+            docker compose build --no-cache gd_sozial_watcher
+            docker compose up -d gd_sozial_watcher
           host: ${{ secrets.HOST }}
           port: 22
           user: ${{ secrets.USERNAME }}
