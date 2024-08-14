@@ -19,10 +19,10 @@ public class Import {
 
     public Import(Guild guild, TextChannel channel) {
         channel.getHistory().retrievePast(1).queue(messages -> messages.forEach(message -> message.getAttachments().forEach(attachment -> {
-            CompletableFuture<File> file = attachment.downloadToFile();
+            CompletableFuture<InputStream> inputStreamCompletableFuture = attachment.getProxy().download();
             BufferedReader bufferedReader = null;
             try {
-                bufferedReader = new BufferedReader(new FileReader(file.get()));
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStreamCompletableFuture.get()));
                 StringBuilder stringBuilder = new StringBuilder();
                 String line = bufferedReader.readLine();
                 while (line != null) {
