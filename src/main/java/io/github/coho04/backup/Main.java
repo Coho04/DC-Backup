@@ -12,5 +12,6 @@ public class Main {
         builder.registerGatewayIntents(GatewayIntent.MESSAGE_CONTENT);
         builder.registerCommands(new BackupCommand(), new ImportCommand());
         builder.build();
+        System.out.println("Java application started successfully");
     }
 }
