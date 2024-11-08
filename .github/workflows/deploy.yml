@@ -1,0 +1,22 @@
+name: Restart Pterodactyl Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  restart_pterodactyl_server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restart Server via Pterodactyl API
+        env:
+          PTERODACTYL_API_KEY: ${{ secrets.PTERODACTYL_API_KEY }}
+          SERVER_ID: ${{ vars.PTERODACTYL_SERVER_ID }}
+        run: |
+          echo "Restarting server with ID: ${SERVER_ID}"
+          curl -X POST "https://panel.golden-developer.de/api/client/servers/${SERVER_ID}/power" \
+            -H "Authorization: Bearer $PTERODACTYL_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"signal": "restart"}'
