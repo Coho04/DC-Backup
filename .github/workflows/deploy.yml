@@ -1,4 +1,4 @@
-name: Restart Pterodactyl Server
+name: Restart Panel Server
 
 on:
   push:
@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Restart Server via Pterodactyl API
+      - name: Restart Server via Panel API
         env:
-          PTERODACTYL_API_KEY: ${{ secrets.PTERODACTYL_API_KEY }}
-          SERVER_ID: ${{ vars.PTERODACTYL_SERVER_ID }}
+          PANEL_API_KEY: ${{ secrets.PTERODACTYL_API_KEY }}
+          PANEL_SERVER_ID: ${{ vars.PTERODACTYL_SERVER_ID }}
         run: |
-          echo "Restarting server with ID: ${SERVER_ID}"
-          curl -X POST "https://panel.golden-developer.de/api/client/servers/${SERVER_ID}/power" \
-            -H "Authorization: Bearer $PTERODACTYL_API_KEY" \
+          echo "Restarting server with ID: ${PANEL_SERVER_ID}"
+          curl -X POST "https://panel.code-sphere.de/api/client/servers/${PANEL_SERVER_ID}/power" \
+            -H "Authorization: Bearer $PANEL_API_KEY" \
             -H "Content-Type: application/json" \
             -d '{"signal": "restart"}'
